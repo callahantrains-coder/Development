@@ -65,8 +65,7 @@ function applyFilters() {
   const filtered = data.filter(item =>
     (!f1 || item.category.toLowerCase() === f1) &&
     (!f2 || item.type.toLowerCase() === f2) &&
-    (item.name.toLowerCase().includes(search) ||
-     item.description.toLowerCase().includes(search))
+    (item.name.toLowerCase().includes(search))
   );
 
   renderGallery(filtered);
