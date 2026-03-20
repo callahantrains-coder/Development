@@ -72,12 +72,12 @@ fetch(csvUrl)
     populateDropdown("filter2", col2);
 
     function applyFilters() {
-      const f1 = document.getElementById("Category").value;
-      const f2 = document.getElementById("Tags").value;
+      const f1 = document.getElementById("filter1").value;
+      const f2 = document.getElementById("filter2").value;
 
       const filtered = data.filter(row =>
-        (f1 === "" || row["Column1"] === f1) &&
-        (f2 === "" || row["Column2"] === f2)
+        (f1 === "" || row["Category"] === f1) &&
+        (f2 === "" || row["Tags"] === f2)
       );
 
       renderTable(filtered);
