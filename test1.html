@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Filtered Image Gallery</title>
+  <style>
+    .gallery { display: flex; flex-wrap: wrap; gap: 16px; }
+    .item { width: 200px; }
+    .item img { width: 100%; border-radius: 8px; }
+  </style>
+</head>
+<body>
+
+<h2>Image Gallery</h2>
+
+<!-- Filters -->
+<select id="filter1"></select>
+<select id="filter2"></select>
+<input type="text" id="search" placeholder="Search...">
+
+<!-- Gallery -->
+<div class="gallery" id="gallery"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script>
+const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRStPO8x9fBkPafkwC-LjRP7d9Q8Y6hVfSbp--bI1hsIS9CbUfKyhmARF_fmyoS-lr-_qra59nFy9Cu/pub?gid=2043653487&single=true&output=csv";
+
+let data = [];
+
+// Load CSV
+Papa.parse(csvUrl, {
+  download: true,
+  header: true,
+  complete: function(results) {
+    data = results.data;
+    populateFilters();
+    renderGallery(data);
+  }
+});
+
+// Populate dropdowns
+function populateFilters() {
+  const filter1 = document.getElementById("filter1");
+  const filter2 = document.getElementById("filter2");
+
+  const categories = [...new Set(data.map(d => d.category))];
+  const types = [...new Set(data.map(d => d.type))];
+
+  filter1.innerHTML = `<option value="">All Categories</option>` +
+    categories.map(c => `<option>${c}</option>`).join("");
+
+  filter2.innerHTML = `<option value="">All Types</option>` +
+    types.map(t => `<option>${t}</option>`).join("");
+
+  filter1.onchange = applyFilters;
+  filter2.onchange = applyFilters;
+  document.getElementById("search").oninput = applyFilters;
+}
+
+// Apply filters
+function applyFilters() {
+  const f1 = document.getElementById("filter1").value.toLowerCase();
+  const f2 = document.getElementById("filter2").value.toLowerCase();
+  const search = document.getElementById("search").value.toLowerCase();
+
+  const filtered = data.filter(item =>
+    (!f1 || item.category.toLowerCase() === f1) &&
+    (!f2 || item.type.toLowerCase() === f2) &&
+    (item.name.toLowerCase().includes(search) ||
+     item.description.toLowerCase().includes(search))
+  );
+
+  renderGallery(filtered);
+}
+
+// Render gallery
+function renderGallery(items) {
+  const gallery = document.getElementById("gallery");
+  gallery.innerHTML = items.map(item => `
+    <div class="item">
+      <img src="${item.image_url}" alt="${item.name}">
+      <h4>${item.name}</h4>
+      <p>${item.category} – ${item.type}</p>
+    </div>
+  `).join("");
+}
+</script>
+
+</body>
+</html>
