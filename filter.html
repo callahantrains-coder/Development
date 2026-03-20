@@ -65,15 +65,15 @@ fetch(csvUrl)
     const data = parseCSV(text);
 
     // Auto-fill dropdowns from two columns
-    const col1 = data.map(r => r["Column1"]); // change to your column name
-    const col2 = data.map(r => r["Column2"]); // change to your column name
+    const col1 = data.map(r => r["Category"]); // change to your column name
+    const col2 = data.map(r => r["Tags"]); // change to your column name
 
     populateDropdown("filter1", col1);
     populateDropdown("filter2", col2);
 
     function applyFilters() {
-      const f1 = document.getElementById("filter1").value;
-      const f2 = document.getElementById("filter2").value;
+      const f1 = document.getElementById("Category").value;
+      const f2 = document.getElementById("Tags").value;
 
       const filtered = data.filter(row =>
         (f1 === "" || row["Column1"] === f1) &&
