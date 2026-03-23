@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Directory</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  background: #f5f7fb;
+}
+
+header {
+  padding: 20px;
+  background: #111827;
+  color: white;
+  text-align: center;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  padding: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+input, select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  min-width: 200px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.name {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.title {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #eef2ff;
+  font-size: 12px;
+}
+
+.email {
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Employee Directory</h1>
+</header>
+
+<div class="controls">
+  <input type="text" id="search" placeholder="Search employees...">
+  <select id="departmentFilter">
+    <option value="">All Departments</option>
+  </select>
+  <select id="locationFilter">
+    <option value="">All Locations</option>
+  </select>
+</div>
+
+<div class="grid" id="directory"></div>
+
+<script>
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vShMcetYSuHqwQk8AhiDBQB1hK4qoQkYLpoMwUpnBg7gH3lte5tdFo5vyh-7hZlSLdoXkf9eO32Ex17/pub?gid=1291792471&single=true&output=csv";
+
+let employees = [];
+
+async function fetchData() {
+  const res = await fetch(SHEET_URL);
+  const text = await res.text();
+
+  const rows = text.split("\n").map(r => r.split(","));
+  const headers = rows.shift();
+
+  employees = rows.map(row => {
+    let obj = {};
+    headers.forEach((h, i) => obj[h.trim()] = row[i]?.trim());
+    return obj;
+  });
+
+  populateFilters();
+  render(employees);
+}
+
+function populateFilters() {
+  const deptSet = new Set();
+  const locSet = new Set();
+
+  employees.forEach(emp => {
+    deptSet.add(emp.Department);
+    locSet.add(emp.Location);
+  });
+
+  const deptSelect = document.getElementById("departmentFilter");
+  const locSelect = document.getElementById("locationFilter");
+
+  deptSet.forEach(d => {
+    const opt = document.createElement("option");
+    opt.value = d;
+    opt.textContent = d;
+    deptSelect.appendChild(opt);
+  });
+
+  locSet.forEach(l => {
+    const opt = document.createElement("option");
+    opt.value = l;
+    opt.textContent = l;
+    locSelect.appendChild(opt);
+  });
+}
+
+function render(data) {
+  const container = document.getElementById("directory");
+  container.innerHTML = "";
+
+  data.forEach(emp => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <img src="${emp.Photo || 'https://via.placeholder.com/80'}">
+      <div class="name">${emp.Name}</div>
+      <div class="title">${emp.Title}</div>
+      <div class="badge">${emp.Department}</div>
+      <div class="badge">${emp.Location}</div>
+      <div class="email">${emp.Email}</div>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+function applyFilters() {
+  const search = document.getElementById("search").value.toLowerCase();
+  const dept = document.getElementById("departmentFilter").value;
+  const loc = document.getElementById("locationFilter").value;
+
+  const filtered = employees.filter(emp => {
+    return (
+      (!dept || emp.Department === dept) &&
+      (!loc || emp.Location === loc) &&
+      (
+        emp.Name.toLowerCase().includes(search) ||
+        emp.Title.toLowerCase().includes(search)
+      )
+    );
+  });
+
+  render(filtered);
+}
+
+document.getElementById("search").addEventListener("input", applyFilters);
+document.getElementById("departmentFilter").addEventListener("change", applyFilters);
+document.getElementById("locationFilter").addEventListener("change", applyFilters);
+
+fetchData();
+</script>
+
+</body>
+</html>
