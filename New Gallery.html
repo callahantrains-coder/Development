@@ -134,8 +134,8 @@ function populateFilters() {
   const locSet = new Set();
 
   items.forEach(emp => {
-    deptSet.add(item.Department);
-    locSet.add(item.Location);
+    deptSet.add(emp.Department);
+    locSet.add(emp.Location);
   });
 
   const deptSelect = document.getElementById("departmentFilter");
@@ -165,12 +165,12 @@ function render(data) {
     card.className = "card";
 
     card.innerHTML = `
-      <img src=${item.Photo}>
-      <div class="name">${item.Name}</div>
-      <div class="title">${item.Title}</div>
-      <div class="badge">${item.Department}</div>
-      <div class="badge">${item.Location}</div>
-      <div class="email">${item.Email}</div>
+      <img src=${emp.Photo}>
+      <div class="name">${emp.Name}</div>
+      <div class="title">${emp.Title}</div>
+      <div class="badge">${emp.Department}</div>
+      <div class="badge">${emp.Location}</div>
+      <div class="email">${emp.Email}</div>
     `;
 
     container.appendChild(card);
@@ -184,11 +184,11 @@ function applyFilters() {
 
   const filtered = items.filter(emp => {
     return (
-      (!dept || item.Department === dept) &&
-      (!loc || item.Location === loc) &&
+      (!dept || emp.Department === dept) &&
+      (!loc || emp.Location === loc) &&
       (
-        item.Name.toLowerCase().includes(search) ||
-        item.Title.toLowerCase().includes(search)
+        emp.Name.toLowerCase().includes(search) ||
+        emp.Title.toLowerCase().includes(search)
       )
     );
   });
