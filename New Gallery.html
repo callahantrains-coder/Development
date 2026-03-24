@@ -133,7 +133,7 @@ function populateFilters() {
   const deptSet = new Set();
   const locSet = new Set();
 
-  items.forEach(emp => {
+  items.forEach(item => {
     deptSet.add(emp.Department);
     locSet.add(emp.Location);
   });
@@ -160,7 +160,7 @@ function render(data) {
   const container = document.getElementById("directory");
   container.innerHTML = "";
 
-  data.forEach(emp => {
+  data.forEach(item => {
     const card = document.createElement("div");
     card.className = "card";
 
@@ -182,7 +182,7 @@ function applyFilters() {
   const dept = document.getElementById("departmentFilter").value;
   const loc = document.getElementById("locationFilter").value;
 
-  const filtered = items.filter(emp => {
+  const filtered = items.filter(item => {
     return (
       (!dept || emp.Department === dept) &&
       (!loc || emp.Location === loc) &&
