@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Train Catalog</title>
+<title>Employee Directory</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
@@ -57,23 +57,23 @@ input, select {
 }
 
 .card img {
-  width: 100%;
+  width: 200px;
   height: auto;
   margin-bottom: 10px;
 }
 
-.description {
+.name {
   font-weight: 600;
   font-size: 18px;
 }
 
-.value {
+.title {
   color: #6b7280;
   font-size: 14px;
 }
 
 .badge {
-  display: inline-bbrandk;
+  display: inline-block;
   margin-top: 8px;
   padding: 4px 10px;
   border-radius: 999px;
@@ -81,7 +81,7 @@ input, select {
   font-size: 12px;
 }
 
-.asset_number {
+.email {
   margin-top: 10px;
   font-size: 13px;
 }
@@ -92,25 +92,25 @@ input, select {
 <body>
 
 <header>
-  <h1>Train Catalog</h1>
+  <h1>Employee Directory</h1>
 </header>
 
 <div class="controls">
-  <input type="text" id="search" placeholder="Search Catalog...">
-  <select id="labelFilter">
-    <option value="">All Labels</option>
+  <input type="text" id="search" placeholder="Search employees...">
+  <select id="departmentFilter">
+    <option value="">All Departments</option>
   </select>
-  <select id="brandFilter">
-    <option value="">All Brands</option>
+  <select id="locationFilter">
+    <option value="">All Locations</option>
   </select>
 </div>
 
-<div class="grid" id="catalog"></div>
+<div class="grid" id="directory"></div>
 
 <script>
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vShMcetYSuHqwQk8AhiDBQB1hK4qoQkYLpoMwUpnBg7gH3lte5tdFo5vyh-7hZlSLdoXkf9eO32Ex17/pub?gid=1291792471&single=true&output=csv";
 
-let items = [];
+let employees = [];
 
 async function fetchData() {
   const res = await fetch(SHEET_URL);
@@ -119,45 +119,45 @@ async function fetchData() {
   const rows = text.split("\n").map(r => r.split(","));
   const headers = rows.shift();
 
-  items = rows.map(row => {
+  employees = rows.map(row => {
     let obj = {};
     headers.forEach((h, i) => obj[h.trim()] = row[i]?.trim());
     return obj;
   });
 
   populateFilters();
-  render(items);
+  render(employees);
 }
 
 function populateFilters() {
-  const labelSet = new Set();
-  const brandSet = new Set();
+  const deptSet = new Set();
+  const locSet = new Set();
 
-  items.forEach(emp => {
-    labelSet.add(item.Label);
-    brandSet.add(item.Brand);
+  employees.forEach(emp => {
+    deptSet.add(emp.Department);
+    locSet.add(emp.Location);
   });
 
-  const labelSelect = document.getElementById("labelFilter");
-  const brandSelect = document.getElementById("brandFilter");
+  const deptSelect = document.getElementById("departmentFilter");
+  const locSelect = document.getElementById("locationFilter");
 
-  labelSet.forEach(d => {
+  deptSet.forEach(d => {
     const opt = document.createElement("option");
     opt.value = d;
     opt.textContent = d;
-    labelSelect.appendChild(opt);
+    deptSelect.appendChild(opt);
   });
 
-  brandSet.forEach(l => {
+  locSet.forEach(l => {
     const opt = document.createElement("option");
     opt.value = l;
     opt.textContent = l;
-    brandSelect.appendChild(opt);
+    locSelect.appendChild(opt);
   });
 }
 
 function render(data) {
-  const container = document.getElementById("catalog");
+  const container = document.getElementById("directory");
   container.innerHTML = "";
 
   data.forEach(emp => {
@@ -165,12 +165,12 @@ function render(data) {
     card.className = "card";
 
     card.innerHTML = `
-      <img src=${item.Picture}>
-      <div class="description">${item.Descrpition}</div>
-      <div class="badge">${item.Value}</div>
-      <div class="badge">${item.Label}</div>
-      <div class="badge">${item.Brand}</div>
-      <div class="badge">${item.Asset_Number}</div>
+      <img src=${emp.Photo}>
+      <div class="name">${emp.Name}</div>
+      <div class="title">${emp.Title}</div>
+      <div class="badge">${emp.Department}</div>
+      <div class="badge">${emp.Location}</div>
+      <div class="email">${emp.Email}</div>
     `;
 
     container.appendChild(card);
@@ -179,16 +179,16 @@ function render(data) {
 
 function applyFilters() {
   const search = document.getElementById("search").value.toLowerCase();
-  const label = document.getElementById("labelFilter").value;
-  const brand = document.getElementById("brandFilter").value;
+  const dept = document.getElementById("departmentFilter").value;
+  const loc = document.getElementById("locationFilter").value;
 
-  const filtered = items.filter(emp => {
+  const filtered = employees.filter(emp => {
     return (
-      (!label || item.Label === label) &&
-      (!brand || item.Brand === brand) &&
+      (!dept || emp.Department === dept) &&
+      (!loc || emp.Location === loc) &&
       (
-        item.Descrpition.toLowerCase().includes(search) ||
-        item.Value.toLowerCase().includes(search)
+        emp.Name.toLowerCase().includes(search) ||
+        emp.Title.toLowerCase().includes(search)
       )
     );
   });
@@ -197,8 +197,8 @@ function applyFilters() {
 }
 
 document.getElementById("search").addEventListener("input", applyFilters);
-document.getElementById("labelFilter").addEventListener("change", applyFilters);
-document.getElementById("brandFilter").addEventListener("change", applyFilters);
+document.getElementById("departmentFilter").addEventListener("change", applyFilters);
+document.getElementById("locationFilter").addEventListener("change", applyFilters);
 
 fetchData();
 </script>
