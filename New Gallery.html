@@ -62,7 +62,7 @@ input, select {
   margin-bottom: 10px;
 }
 
-.description {
+.name {
   font-weight: 600;
   font-size: 18px;
 }
@@ -166,7 +166,7 @@ function render(data) {
 
     card.innerHTML = `
       <img src=${emp.Photo}>
-      <div class="description">${emp.Description}</div>
+      <div class="name">${emp.Name}</div>
       <div class="title">${emp.Title}</div>
       <div class="badge">${emp.Department}</div>
       <div class="badge">${emp.Location}</div>
@@ -187,7 +187,7 @@ function applyFilters() {
       (!dept || emp.Department === dept) &&
       (!loc || emp.Location === loc) &&
       (
-        emp.description.toLowerCase().includes(search) ||
+        emp.Name.toLowerCase().includes(search) ||
         emp.Title.toLowerCase().includes(search)
       )
     );
