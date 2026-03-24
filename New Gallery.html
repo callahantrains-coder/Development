@@ -110,7 +110,7 @@ input, select {
 <script>
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vShMcetYSuHqwQk8AhiDBQB1hK4qoQkYLpoMwUpnBg7gH3lte5tdFo5vyh-7hZlSLdoXkf9eO32Ex17/pub?gid=1291792471&single=true&output=csv";
 
-let items = [];
+let employees = [];
 
 async function fetchData() {
   const res = await fetch(SHEET_URL);
@@ -119,21 +119,21 @@ async function fetchData() {
   const rows = text.split("\n").map(r => r.split(","));
   const headers = rows.shift();
 
-  items = rows.map(row => {
+  employees = rows.map(row => {
     let obj = {};
     headers.forEach((h, i) => obj[h.trim()] = row[i]?.trim());
     return obj;
   });
 
   populateFilters();
-  render(items);
+  render(employees);
 }
 
 function populateFilters() {
   const deptSet = new Set();
   const locSet = new Set();
 
-  items.forEach(item => {
+  employees.forEach(emp => {
     deptSet.add(emp.Department);
     locSet.add(emp.Location);
   });
@@ -160,7 +160,7 @@ function render(data) {
   const container = document.getElementById("directory");
   container.innerHTML = "";
 
-  data.forEach(item => {
+  data.forEach(emp => {
     const card = document.createElement("div");
     card.className = "card";
 
@@ -182,7 +182,7 @@ function applyFilters() {
   const dept = document.getElementById("departmentFilter").value;
   const loc = document.getElementById("locationFilter").value;
 
-  const filtered = items.filter(item => {
+  const filtered = employees.filter(emp => {
     return (
       (!dept || emp.Department === dept) &&
       (!loc || emp.Location === loc) &&
