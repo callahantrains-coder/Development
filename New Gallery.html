@@ -62,12 +62,12 @@ input, select {
   margin-bottom: 10px;
 }
 
-.name {
+.Description {
   font-weight: 600;
   font-size: 18px;
 }
 
-.title {
+.Value {
   color: #6b7280;
   font-size: 14px;
 }
@@ -79,11 +79,6 @@ input, select {
   border-radius: 999px;
   background: #eef2ff;
   font-size: 12px;
-}
-
-.email {
-  margin-top: 10px;
-  font-size: 13px;
 }
 
 </style>
@@ -134,8 +129,8 @@ function populateFilters() {
   const brandSet = new Set();
 
   items.forEach(item => {
-    labelSet.add(item.Department);
-    brandSet.add(item.Location);
+    labelSet.add(item.Label);
+    brandSet.add(item.Brand);
   });
 
   const labelSelect = document.getElementById("labelFilter");
@@ -165,12 +160,12 @@ function render(data) {
     card.className = "card";
 
     card.innerHTML = `
-      <img src=${item.Photo}>
-      <div class="name">${item.Name}</div>
+      <img src=${item.Picture}>
+      <div class="Description">${item.Description}</div>
       <div class="badge">${item["Asset Number"]}</div>
-      <div class="badge">${item.Location}</div>
-      <div class="badge">${item.Department}</div>
-      <div class="badge">${item.Title}</div>
+      <div class="badge">${item.Brand}</div>
+      <div class="badge">${item.Label}</div>
+      <div class="badge">${item.Value}</div>
     `;
 
     container.appendChild(card);
@@ -184,11 +179,11 @@ function applyFilters() {
 
   const filtered = items.filter(item => {
     return (
-      (!label || item.Department === label) &&
-      (!loc || item.Location === loc) &&
+      (!label || item.Label === label) &&
+      (!loc || item.Brand === loc) &&
       (
-        item.Name.toLowerCase().includes(search) ||
-        item.Title.toLowerCase().includes(search)
+        item.Description.toLowerCase().includes(search) ||
+        item.Value.toLowerCase().includes(search)
       )
     );
   });
