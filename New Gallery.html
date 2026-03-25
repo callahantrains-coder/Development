@@ -130,29 +130,29 @@ async function fetchData() {
 }
 
 function populateFilters() {
-  const deptSet = new Set();
-  const locSet = new Set();
+  const labelSet = new Set();
+  const brandSet = new Set();
 
   items.forEach(item => {
-    deptSet.add(item.Department);
-    locSet.add(item.Location);
+    labelSet.add(item.Department);
+    brandSet.add(item.Location);
   });
 
-  const deptSelect = document.getElementById("labelFilter");
-  const locSelect = document.getElementById("brandFilter");
+  const labelSelect = document.getElementById("labelFilter");
+  const brandSelect = document.getElementById("brandFilter");
 
-  deptSet.forEach(d => {
+  labelSet.forEach(d => {
     const opt = document.createElement("option");
     opt.value = d;
     opt.textContent = d;
-    deptSelect.appendChild(opt);
+    labelSelect.appendChild(opt);
   });
 
-  locSet.forEach(l => {
+  brandSet.forEach(l => {
     const opt = document.createElement("option");
     opt.value = l;
     opt.textContent = l;
-    locSelect.appendChild(opt);
+    brandSelect.appendChild(opt);
   });
 }
 
@@ -179,12 +179,12 @@ function render(data) {
 
 function applyFilters() {
   const search = document.getElementById("search").value.toLowerCase();
-  const dept = document.getElementById("labelFilter").value;
+  const label = document.getElementById("labelFilter").value;
   const loc = document.getElementById("brandFilter").value;
 
   const filtered = items.filter(item => {
     return (
-      (!dept || item.Department === dept) &&
+      (!label || item.Department === label) &&
       (!loc || item.Location === loc) &&
       (
         item.Name.toLowerCase().includes(search) ||
