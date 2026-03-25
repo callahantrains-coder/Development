@@ -97,15 +97,15 @@ input, select {
 
 <div class="controls">
   <input type="text" id="search" placeholder="Search Catalog...">
-    <select id="locationFilter">
+    <select id="brandFilter">
     <option value="">All Brands</option>
   </select>
-  <select id="departmentFilter">
+  <select id="labelFilter">
     <option value="">All Labels</option>
   </select>
 </div>
 
-<div class="grid" id="directory"></div>
+<div class="grid" id="catalog"></div>
 
 <script>
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vShMcetYSuHqwQk8AhiDBQB1hK4qoQkYLpoMwUpnBg7gH3lte5tdFo5vyh-7hZlSLdoXkf9eO32Ex17/pub?gid=1291792471&single=true&output=csv";
@@ -138,8 +138,8 @@ function populateFilters() {
     locSet.add(item.Location);
   });
 
-  const deptSelect = document.getElementById("departmentFilter");
-  const locSelect = document.getElementById("locationFilter");
+  const deptSelect = document.getElementById("labelFilter");
+  const locSelect = document.getElementById("brandFilter");
 
   deptSet.forEach(d => {
     const opt = document.createElement("option");
@@ -157,7 +157,7 @@ function populateFilters() {
 }
 
 function render(data) {
-  const container = document.getElementById("directory");
+  const container = document.getElementById("catalog");
   container.innerHTML = "";
 
   data.forEach(item => {
@@ -179,8 +179,8 @@ function render(data) {
 
 function applyFilters() {
   const search = document.getElementById("search").value.toLowerCase();
-  const dept = document.getElementById("departmentFilter").value;
-  const loc = document.getElementById("locationFilter").value;
+  const dept = document.getElementById("labelFilter").value;
+  const loc = document.getElementById("brandFilter").value;
 
   const filtered = items.filter(item => {
     return (
@@ -197,8 +197,8 @@ function applyFilters() {
 }
 
 document.getElementById("search").addEventListener("input", applyFilters);
-document.getElementById("departmentFilter").addEventListener("change", applyFilters);
-document.getElementById("locationFilter").addEventListener("change", applyFilters);
+document.getElementById("labelFilter").addEventListener("change", applyFilters);
+document.getElementById("brandFilter").addEventListener("change", applyFilters);
 
 fetchData();
 </script>
