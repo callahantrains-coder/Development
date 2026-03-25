@@ -1,63 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Travel Map</title>
+  <title>Places I've Been</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
   <style>
-    #map {
-      height: 100vh;
-      width: 100%;
-    }
+    body { margin: 0; }
+    #map { height: 100vh; }
   </style>
 </head>
 <body>
 
-<h2 style="text-align:center;">Places I've Been</h2>
 <div id="map"></div>
 
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 <script>
-async function initMap() {
-  const map = new google.maps.Map(document.getElementById("map"), {
-    zoom: 2,
-    center: { lat: 20, lng: 0 }
+// Initialize map
+var map = L.map('map').setView([20, 0], 2);
+
+// OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+// 🔁 Replace with your Google Sheet CSV URL
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3q_28z-Mu_L9llgB3uC-orU8CLcv8cXV8GrD9GvjXj1QPfxKg_KDw33KT6OrCTnmjWjSkT6-81WJK/pub?gid=661984537&single=true&output=csv";
+
+// Fetch and parse CSV
+fetch(sheetURL)
+  .then(response => response.text())
+  .then(data => {
+    const rows = data.split("\n").slice(1);
+
+    rows.forEach(row => {
+      const cols = row.split(",");
+
+      const name = cols[0];
+      const lat = parseFloat(cols[1]);
+      const lng = parseFloat(cols[2]);
+
+      if (!isNaN(lat) && !isNaN(lng)) {
+        L.marker([lat, lng])
+          .addTo(map)
+          .bindPopup(`<b>${name}</b>`);
+      }
+    });
   });
-
-  // Replace with your published CSV URL
-  const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3q_28z-Mu_L9llgB3uC-orU8CLcv8cXV8GrD9GvjXj1QPfxKg_KDw33KT6OrCTnmjWjSkT6-81WJK/pub?gid=661984537&single=true&output=csv";
-
-  const response = await fetch(sheetUrl);
-  const data = await response.text();
-
-  const rows = data.split("\n").slice(1); // skip header
-
-  rows.forEach(row => {
-    const cols = row.split(",");
-
-    const name = cols[0];
-    const lat = parseFloat(cols[1]);
-    const lng = parseFloat(cols[2]);
-    const desc = cols[3];
-
-    if (!isNaN(lat) && !isNaN(lng)) {
-      const marker = new google.maps.Marker({
-        position: { lat, lng },
-        map: map,
-        title: name
-      });
-
-      const infoWindow = new google.maps.InfoWindow({
-        content: `<h3>${name}</h3><p>${desc}</p>`
-      });
-
-      marker.addListener("click", () => {
-        infoWindow.open(map, marker);
-      });
-    }
-  });
-}
-</script>
-
-<script async
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDOP7p6DurWvvwKszyg7KXwIMUmhLgyGDg&callback=initMap">
 </script>
 
 </body>
