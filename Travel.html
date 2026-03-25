@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Travel Map</title>
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<h2 style="text-align:center;">Places I've Been</h2>
+<div id="map"></div>
+
+<script>
+async function initMap() {
+  const map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 2,
+    center: { lat: 20, lng: 0 }
+  });
+
+  // Replace with your published CSV URL
+  const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3q_28z-Mu_L9llgB3uC-orU8CLcv8cXV8GrD9GvjXj1QPfxKg_KDw33KT6OrCTnmjWjSkT6-81WJK/pub?gid=661984537&single=true&output=csv";
+
+  const response = await fetch(sheetUrl);
+  const data = await response.text();
+
+  const rows = data.split("\n").slice(1); // skip header
+
+  rows.forEach(row => {
+    const cols = row.split(",");
+
+    const name = cols[0];
+    const lat = parseFloat(cols[1]);
+    const lng = parseFloat(cols[2]);
+    const desc = cols[3];
+
+    if (!isNaN(lat) && !isNaN(lng)) {
+      const marker = new google.maps.Marker({
+        position: { lat, lng },
+        map: map,
+        title: name
+      });
+
+      const infoWindow = new google.maps.InfoWindow({
+        content: `<h3>${name}</h3><p>${desc}</p>`
+      });
+
+      marker.addListener("click", () => {
+        infoWindow.open(map, marker);
+      });
+    }
+  });
+}
+</script>
+
+<script async
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDOP7p6DurWvvwKszyg7KXwIMUmhLgyGDg&callback=initMap">
+</script>
+
+</body>
+</html>
