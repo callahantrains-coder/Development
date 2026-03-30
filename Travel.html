@@ -25,9 +25,7 @@
 var map = L.map('map').setView([20, 0], 2);
 
 // OpenStreetMap tiles
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
+L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png').addTo(map);
 
 // 🔁 Replace with your Google Sheet CSV URL
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3q_28z-Mu_L9llgB3uC-orU8CLcv8cXV8GrD9GvjXj1QPfxKg_KDw33KT6OrCTnmjWjSkT6-81WJK/pub?gid=661984537&single=true&output=csv";
