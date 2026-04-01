@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Travel Map</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <style>
+    body { margin: 0; }
+    #map { height: 100vh; width: 100%; }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+  // 🔑 Replace with your MapTiler API key
+  const MAPTILER_KEY = "zLaN8uANq9M34DtL5MEY";
+
+  // 📄 Replace with your Google Sheets CSV link
+  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3q_28z-Mu_L9llgB3uC-orU8CLcv8cXV8GrD9GvjXj1QPfxKg_KDw33KT6OrCTnmjWjSkT6-81WJK/pub?gid=535267231&single=true&output=csv";
+
+  // 🌍 Initialize map
+  const map = L.map('map').setView([20, 0], 2);
+
+  // 🗺️ MapTiler tiles
+  L.tileLayer(`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`, {
+    attribution: '&copy; MapTiler & OpenStreetMap contributors'
+  }).addTo(map);
+
+  // 📥 Load CSV data
+  fetch(CSV_URL)
+    .then(response => response.text())
+    .then(csv => {
+      const rows = csv.split("\n").slice(1);
+
+      rows.forEach(row => {
+        const cols = row.split(",");
+
+        const name = cols[0];
+        const lat = parseFloat(cols[1]);
+        const lng = parseFloat(cols[2]);
+        const desc = cols[3];
+
+        if (!isNaN(lat) && !isNaN(lng)) {
+          L.marker([lat, lng])
+            .addTo(map)
+            .bindPopup(`<b>${name}</b><br>${desc}`);
+        }
+      });
+    })
+    .catch(err => console.error("CSV load error:", err));
+</script>
+
+</body>
+</html>
