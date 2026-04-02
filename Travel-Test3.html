@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Travel Map</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <!-- PapaParse for CSV -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <style>
+    body { margin: 0; font-family: Arial; }
+    #map { height: 100vh; }
+    #filters {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+
+<div id="filters"><b>Filters</b><br></div>
+<div id="map"></div>
+
+<script>
+
+// 🔑 Replace with your MapTiler API key
+const apiKey = "zLaN8uANq9M34DtL5MEY";
+
+// 🔗 Replace with your Google Sheets CSV link
+const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3q_28z-Mu_L9llgB3uC-orU8CLcv8cXV8GrD9GvjXj1QPfxKg_KDw33KT6OrCTnmjWjSkT6-81WJK/pub?gid=535267231&single=true&output=csv";
+
+const map = L.map('map').setView([20, 0], 2);
+
+// MapTiler tiles
+L.tileLayer(`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${apiKey}`, {
+  tileSize: 512,
+  zoomOffset: -1,
+  attribution: '&copy; MapTiler & OpenStreetMap'
+}).addTo(map);
+
+let markers = [];
+let categories = new Set();
+let activeCategories = new Set();
+
+// Load CSV
+Papa.parse(csvUrl, {
+  download: true,
+  header: true,
+  complete: function(results) {
+    const data = results.data;
+
+    // Collect categories
+    data.forEach(row => {
+      if (row.Category) categories.add(row.Category);
+    });
+
+    // Build filter UI
+    const filterDiv = document.getElementById("filters");
+
+    categories.forEach(cat => {
+      activeCategories.add(cat);
+
+      const label = document.createElement("label");
+      label.innerHTML = `
+        <input type="checkbox" checked value="${cat}"> ${cat}<br>
+      `;
+      filterDiv.appendChild(label);
+    });
+
+    // Listen for filter changes
+    filterDiv.addEventListener("change", () => {
+      const checked = Array.from(filterDiv.querySelectorAll("input:checked"))
+        .map(cb => cb.value);
+
+      activeCategories = new Set(checked);
+      updateMarkers(data);
+    });
+
+    // Initial load
+    updateMarkers(data);
+  }
+});
+
+function updateMarkers(data) {
+  // Remove existing
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+
+  data.forEach(row => {
+    if (!activeCategories.has(row.Category)) return;
+
+    if (!row.Lat || !row.Lon) return;
+
+    const marker = L.marker([parseFloat(row.Lat), parseFloat(row.Lon)])
+      .bindPopup(`
+        <b>${row.Name}</b><br>
+        ${row.Description || ""}
+        <br><i>${row.Category}</i>
+      `);
+
+    marker.addTo(map);
+    markers.push(marker);
+  });
+}
+
+</script>
+
+</body>
+</html>
