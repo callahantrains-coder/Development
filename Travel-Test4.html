@@ -100,7 +100,7 @@ function parseCSV(csv) {
       country: cols[7],
       continent: cols[8]
     };
-  }).filter(d => !isNaN(d.lat) && !isNaN(d.lng));
+  }).filter(d => !isNaN(d.latitude) && !isNaN(d.longitude));
 }
 
 // Populate dropdowns
@@ -135,7 +135,7 @@ function updateMarkers() {
   );
 
   filtered.forEach(d => {
-    const marker = L.marker([d.lat, d.lng])
+    const marker = L.marker([d.latitude, d.longitude])
       .bindPopup(`
         <b>${d.description}</b><br>
         ${d.type}<br>
