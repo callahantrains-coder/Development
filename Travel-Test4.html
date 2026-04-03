@@ -91,8 +91,8 @@ function parseCSV(csv) {
     const cols = row.split(",");
     return {
       description: cols[0],
-      lat: parseFloat(cols[1]),
-      lng: parseFloat(cols[2]),
+      latitude: parseFloat(cols[1]),
+      longitude: parseFloat(cols[2]),
       type: cols[3],
       year: cols[4],
       location: cols[5],
