@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; font-size: 12px;}
+    body { margin: 0; font-family: Arial, sans-serif; font-size: 16px;}
     #map { height: 100vh; }
 
     #filters {
@@ -90,13 +90,15 @@ function parseCSV(csv) {
   return rows.map(row => {
     const cols = row.split(",");
     return {
-      name: cols[0],
+      description: cols[0],
       lat: parseFloat(cols[1]),
       lng: parseFloat(cols[2]),
       type: cols[3],
       year: cols[4],
       location: cols[5],
-      description: cols[6]
+      state: cols[6],
+      country: cols[7],
+      continent: cols[8]
     };
   }).filter(d => !isNaN(d.lat) && !isNaN(d.lng));
 }
@@ -135,11 +137,13 @@ function updateMarkers() {
   filtered.forEach(d => {
     const marker = L.marker([d.lat, d.lng])
       .bindPopup(`
-        <b>${d.name}</b><br>
-        ${d.location}<br>
-        ${d.year}<br>
+        <b>${d.description}</b><br>
         ${d.type}<br>
-        ${d.description}
+        ${d.year}<br>
+        ${d.location}<br>
+        ${d.state}<br>
+        ${d.country}<br>
+        ${d.continent}
       `);
 
     markersLayer.addLayer(marker);
