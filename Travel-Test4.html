@@ -137,6 +137,7 @@ function updateMarkers() {
   filtered.forEach(d => {
     const marker = L.marker([d.latitude, d.longitude])
       .bindPopup(`
+        <div style="font-family: Arial, sans-serif; font-size: 20px; ">
         <b>${d.description}</b><br>
         ${d.type}<br>
         ${d.year}<br>
