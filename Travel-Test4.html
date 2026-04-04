@@ -144,7 +144,7 @@ function updateMarkers() {
         ${d.state}<br>
         ${d.country}<br>
         ${d.continent}
-      `);
+      `, { maxWidth: 250 });
 
     markersLayer.addLayer(marker);
   });
